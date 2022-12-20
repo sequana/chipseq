@@ -41,7 +41,8 @@ jobs:
       shell: bash -l {0}
       run: |
         pip install .
-
+        # use specific idr package for low number of peaks (test)
+        pip install git+https://github.com/sequana/idr@617c3a7
 
     - name: Install dependencies
       shell: bash -l {0}
