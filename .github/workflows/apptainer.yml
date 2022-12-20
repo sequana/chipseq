@@ -85,7 +85,9 @@ jobs:
 
     - name: testing
       run: |
-        sequana_chipseq --design test/data/design.csv --input-directory test/data/ --use-apptainer --apptainer-prefix ~/images --genome-directory test/data/ecoli_MG1655 && cd chipseq && sh chipseq.sh
+        ls ~/images
+        ls /home/runner/work/chipseq/chipseq
+        sequana_chipseq --design test/data/design.csv --input-directory test/data/ --use-apptainer --apptainer-prefix /home/runner/work/chipseq/chipseq --genome-directory test/data/ecoli_MG1655 && cd chipseq && sh chipseq.sh
 
 
 
