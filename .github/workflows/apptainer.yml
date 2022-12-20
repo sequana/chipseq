@@ -18,7 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+
+      - name: download apptainer images
         run: |
           mkdir ~/images
           wget https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img -o ~/images/866bf0d2f8f9f5cd879ea6cc4bcc4d20.simg
