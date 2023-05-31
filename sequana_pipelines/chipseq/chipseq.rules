@@ -1131,16 +1131,28 @@ rule multiqc:
 
 os.makedirs("rulegraph", exist_ok=True)
 shutil.copy("design.csv", "rulegraph/")
+
+# ========================================================== rulegraph
 rule rulegraph:
-    input:
-        manager.snakefile
+    input: str(manager.snakefile)
     output:
-        svg=".sequana/rulegraph.svg"
+        svg = "rulegraph/rulegraph.dot"
     params:
         mapper = {"multiqc": "../multiqc/multiqc_report.html"},
         configname = "config.yaml"
     wrapper:
         f"{sequana_wrapper_branch}/wrappers/rulegraph"
+
+
+rule dot2svg:
+    input:
+        "rulegraph/rulegraph.dot"
+    output:
+        ".sequana/rulegraph.svg"
+    container:
+        config['apptainers']['graphviz']
+    shell:
+        """dot -Tsvg {input} -o {output}"""
 
 
 
