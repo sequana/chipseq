@@ -1,4 +1,4 @@
-name: sequana_rnaseq
+name: sequana_chipseq
 
 channels:
 - conda-forge
@@ -19,3 +19,6 @@ dependencies:
 - ucsc-bedgraphtobigwig
 - homer
 - igv
+- pip:
+  - sequana
+
