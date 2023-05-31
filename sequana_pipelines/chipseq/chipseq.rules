@@ -851,7 +851,6 @@ if config['idr']['do']:
             from sequana.idr import IDR
             import pandas as pd
             from collections import defaultdict
-            from pandas.core.computation.ops import UndefinedVariableError
 
             for mode in ['broad','narrow']:
                 pylab.clf()
@@ -862,7 +861,7 @@ if config['idr']['do']:
                         idr = IDR(f"PR_IDR/idr/{mode}/{condition}_PR{i}.csv")
                         try:
                             NPRs[condition].append(len(idr.df.query('idr<@params.idr')))
-                        except UndefinedVariableError: # df may be empty
+                        except: # df may be empty
                             NPRs[condition].append(0)
                 df = pd.DataFrame(NPRs)
                 # sort columns
@@ -874,7 +873,7 @@ if config['idr']['do']:
                     idr = IDR(f"IDR/{mode}/{condition}.csv")
                     try:
                         pylab.plot([i+1], [len(idr.df.query("idr<@params.idr"))], 'ok')
-                    except UndefinedVariableError: # df may be empty
+                    except: # df may be empty
                         NPRs[condition].append(0)
                 pylab.title(f"{mode} case")
                 pylab.ylabel('Number of IDR peaks')
