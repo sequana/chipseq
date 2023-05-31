@@ -183,6 +183,9 @@ mapping:
                 type: int
                 required: True
                 range: { min: 1, max: 8 }
+            "resources":
+                type: any
+                required: true
 
     "idr":
         type: map

@@ -13,6 +13,7 @@ input_pattern: '*fastq.gz'
 # =========================================== Sections for the users
 
 apptainers:
+    graphviz: "https://zenodo.org/record/7928262/files/graphviz_7.0.5.img"
     sequana_tools: https://zenodo.org/record/7341710/files/sequana_tools_0.14.5.img
     fastqc: https://zenodo.org/record/7015004/files/fastqc_0.11.9-py3.img
     fastp: https://zenodo.org/record/7319782/files/fastp_0.23.2.img
