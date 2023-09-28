@@ -1,13 +1,17 @@
-# -*- coding: utf-8 -*-
-# License: 3-clause BSD
 from setuptools import setup, find_namespace_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 import subprocess
 
+
+# handle sequana git link
+with open("requirements.txt", encoding='utf-8') as fh:
+    requirements = [req.rstrip() if not req.startswith("git+") else req.rstrip().split("egg=")[-1] for req in fh]
+
+
 _MAJOR               = 0
 _MINOR               = 9
-_MICRO               = 0
+_MICRO               = 1
 version              = '%d.%d.%d' % (_MAJOR, _MINOR, _MICRO)
 release              = '%d.%d' % (_MAJOR, _MINOR)
 
@@ -64,18 +68,32 @@ setup(
     keywords         = metainfo['keywords'],
     description      = metainfo['description'],
     license          = metainfo['license'],
+    long_description_content_type = "text/x-rst",
     platforms        = metainfo['platforms'],
     url              = metainfo['url'],
     classifiers      = metainfo['classifiers'],
 
     # package installation
     packages=["sequana_pipelines.chipseq" ],
-    install_requires=open("requirements.txt").read(),
 
+    install_requires=requirements,
+
+    # specific packages for testing
+    extras_require={
+        "testing": [
+            "pytest",
+            "pytest-cov",
+            "pytest-xdist",
+            "pytest-mock",
+            "pytest-timeout",
+            "pytest-runner",
+            "coveralls",
+        ],
+    },
     # This is recursive include of data files
     exclude_package_data = {"": ["__pycache__"]},
     package_data = {
-        '': ['*.yaml', "*.rules", "*.json", "requirements.txt", "*png"],
+        '': ['*.yaml', "*.rules", "*.json", "requirements.txt", "*png", "*yml", "*smk"]
         },
 
     zip_safe=False,

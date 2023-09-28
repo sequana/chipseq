@@ -56,7 +56,7 @@ Or use `sequanix <https://sequana.readthedocs.io/en/main/sequanix.html>`_ interf
 Requirements
 ~~~~~~~~~~~~
 
-This pipelines requires the following executable(s):
+This pipeline requires the following executable(s):
 
 - idr This python package is not on pypi. Manual installation is required. Instructions are here:
 https://github.com/nboley/idr but we also provide a singularity in https://damona.readthedocs.io
@@ -84,6 +84,7 @@ Changelog
 ========= ====================================================================
 Version   Description
 ========= ====================================================================
+0.9.1     * Fix requirements and setup.py (remove wrong idr package)
 0.9.0     * use latest wrappers and apptainer (for rulegraph)
 0.8.0     **First release.**
 ========= ====================================================================
