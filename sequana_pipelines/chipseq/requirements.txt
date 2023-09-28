@@ -1,0 +1,16 @@
+annotatePeaks.pl
+bowtie2
+bedGraphToBigWig
+fastqc
+fastp
+featureCounts
+genomeCoverageBed
+idr
+intersectBed
+macs3
+multiqc
+multiBigwigSummary
+picard
+samtools
+plotCorrelation
+plotFingerprint
