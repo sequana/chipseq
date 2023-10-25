@@ -1,6 +1,7 @@
 annotatePeaks.pl
 bowtie2
 bedGraphToBigWig
+dot
 fastqc
 fastp
 featureCounts
@@ -11,6 +12,6 @@ macs3
 multiqc
 multiBigwigSummary
 picard
-samtools
 plotCorrelation
 plotFingerprint
+samtools
