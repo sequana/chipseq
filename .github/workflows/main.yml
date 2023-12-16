@@ -5,11 +5,11 @@ on:
     branches:
       - main
       - dev
-  workflow_dispatch:      
+  workflow_dispatch:
   pull_request:
     branches-ignore: []
   schedule:
-    - cron: '0 0 2 * *'
+    - cron: '0 0 21 * *'
 
 jobs:
   build-linux:
@@ -17,7 +17,7 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-        python: [3.8, 3.9, "3.10"]
+        python: [3.8, 3.9, '3.10']
       fail-fast: false
 
 

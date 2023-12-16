@@ -503,26 +503,27 @@ rule macs3:
 
 
 # ===================================================== naive consensus summary
-rule naive_consensus:
-    input:
-        get_idr_NT_input
-    output:
-        "macs3/{broad_narrow}/{condition}_venn.png",
-    run:
-        from sequana.macs3 import PeakConsensus
-        from pylab import savefig, title
+if config["idr"]["do"]:
+    rule naive_consensus:
+        input:
+            get_idr_NT_input
+        output:
+            "macs3/{broad_narrow}/{condition}_venn.png",
+        run:
+            from sequana.macs3 import PeakConsensus
+            from pylab import savefig, title
 
-        pc = PeakConsensus(input[0], input[1])
-        if len(pc.df1) and len(pc.df2):
-            pc.plot_venn()
-            title(f"{wildcards.broad_narrow}/{wildcards.condition}")
-            savefig(output[0], dpi=200)
+            pc = PeakConsensus(input[0], input[1])
+            if len(pc.df1) and len(pc.df2):
+                pc.plot_venn()
+                title(f"{wildcards.broad_narrow}/{wildcards.condition}")
+                savefig(output[0], dpi=200)
 
-            df_merged = pc.merge()
-        else:
-            copy_no_data_image(output[0])
+                df_merged = pc.merge()
+            else:
+                copy_no_data_image(output[0])
 
-expected_output += expand("macs3/{mode}/{comp}_venn.png", mode=['broad','narrow'], comp=cc.conditions)
+    expected_output += expand("macs3/{mode}/{comp}_venn.png", mode=['broad','narrow'], comp=cc.conditions)
 
 
 # ===================================================== FRiP
@@ -1188,6 +1189,10 @@ rule multiqc:
         input_directory=config['multiqc']['input_directory'],
         config_file=config['multiqc']['config_file'],
         modules=config['multiqc']['modules']
+    resources:
+        **config['multiqc']['resources']
+    container:
+        config["apptainers"]["multiqc"]
     log:
         "multiqc/multiqc.log"
     wrapper:
@@ -1220,7 +1225,6 @@ rule dot2svg:
         """dot -Tsvg {input} -o {output}"""
 
 
-
 # Those rules takes a couple of seconds so no need for a cluster
 localrules: rulegraph
 
@@ -1229,7 +1233,7 @@ onsuccess:
 
     import glob
     from sequana import logger
-    from sequana.modules_report.summary import SummaryModule2
+    from sequana.modules_report.summary import SequanaReport
     from sequana.utils.datatables_js import DataTable
     from sequana.utils.df2html import df2html
     from sequana.idr import IDR
@@ -1354,8 +1358,8 @@ onsuccess:
     intro += df2html(df, dom='rt', show_index=True) + "<br>"
     intro += "<p>Here below, we summarize the number of peaks per type (narrow and broad) across all combinaisons of valid IPs versus controls.</p>"
 
-    intro += SummaryModule2.png_to_embedded_png("peak_narrow_counts", "outputs/peak_narrow_counts.png", style="width:45%; height:40%")
-    intro += SummaryModule2.png_to_embedded_png("peak_broad_counts", "outputs/peak_broad_counts.png", style="width:45%; height:40%")
+    intro += SequanaReport.png_to_embedded_png("peak_narrow_counts", "outputs/peak_narrow_counts.png", style="width:45%; height:40%")
+    intro += SequanaReport.png_to_embedded_png("peak_broad_counts", "outputs/peak_broad_counts.png", style="width:45%; height:40%")
 
 
     for key in keys:
@@ -1378,10 +1382,11 @@ onsuccess:
     intro +="</div>"
 
     # ===================================================== naive peak consensus venn diagram plots
-    intro += "<h3>Naive peak consensus (overlap replicates)</h3>"
-    for cond in cc.get_idr_NT_inputs().keys():
-        for mode in ['narrow', 'broad']:
-            intro += SummaryModule2.png_to_embedded_png(f"peak_{mode}_{cond}_venn", f"macs3/{mode}/{cond}_venn.png", style="width:30%; height:40%")
+    if config["idr"]["do"]:
+        intro += "<h3>Naive peak consensus (overlap replicates)</h3>"
+        for cond in cc.get_idr_NT_inputs().keys():
+            for mode in ['narrow', 'broad']:
+                intro += SequanaReport.png_to_embedded_png(f"peak_{mode}_{cond}_venn", f"macs3/{mode}/{cond}_venn.png", style="width:30%; height:40%")
 
 
     # ===================================================== IDR
@@ -1389,7 +1394,7 @@ onsuccess:
 
 
     if config['idr']['do']:
-        #intro+= SummaryModule2.png_to_embedded_png("peak_counts", "outputs/idr_peak_counts.png",
+        #intro+= SequanaReport.png_to_embedded_png("peak_counts", "outputs/idr_peak_counts.png",
         #    style="width:80%; height:40%;")
         for peak_type in ['narrow', 'broad']:
             for key in cc.get_idr_NT_inputs().keys():
@@ -1435,9 +1440,9 @@ onsuccess:
         intro += """<h2>Pseudo replicates analysis</h2>"""
         intro += """<p>The number of peaks found in the Pseudo replicates analysis should be in agreement with the True replicates. IDR analysis on the pooled pseudo-replicates should results in a number of peaks that are similar (within a factor of 2), which indicates that there are truly good replicates. Black dots here below indicates the true number of peaks found in the IDR analysis. boxplot are the number of peaks found with the pseudo replicates . We filtered out the peak with IDR>0.05 </p>"""
 
-        intro += SummaryModule2.png_to_embedded_png("IDR_NT_narrow",
+        intro += SequanaReport.png_to_embedded_png("IDR_NT_narrow",
                     "outputs/IDR_NT_vs_PR_narrow.png")
-        intro += SummaryModule2.png_to_embedded_png("IDR_NT_broad",
+        intro += SequanaReport.png_to_embedded_png("IDR_NT_broad",
                     "outputs/IDR_NT_vs_PR_broad.png")
 
     if config['idr']['do'] and config['idr']['self_pseudo_replicates']:
@@ -1480,22 +1485,24 @@ onsuccess:
         intro +="""</table>"""
 
     # ========================================================== IDR peak annotation
-    intro += """<h3>IDR peak annotation</h3>
-    <div class="fotorama" fzyz-keyboard="true" data-nav="thumbs" data-loop="true" data-width="500" data-height="500">"""
+    if config["idr"]["do"]:
+        intro += """<h3>IDR peak annotation</h3>
+        <div class="fotorama" fzyz-keyboard="true" data-nav="thumbs" data-loop="true" data-width="500" data-height="500">"""
 
-    files = glob.glob("annotate_peaks_idr/narrow/*png") + glob.glob("annotate_peaks_idr/broad/*png")
-    captions = files
-    for filename, caption in zip(files, captions):
-        intro += '<img src="{}" data-caption="{}">'.format(filename, caption)
-    intro +="</div>"
+        files = glob.glob("annotate_peaks_idr/narrow/*png") + glob.glob("annotate_peaks_idr/broad/*png")
+        captions = files
+        for filename, caption in zip(files, captions):
+            intro += '<img src="{}" data-caption="{}">'.format(filename, caption)
+        intro +="</div>"
 
 
-    for peak_type in ['narrow', 'broad']:
-        for key in sorted(cc.conditions):
-            h = Homer(f"annotate_peaks_idr/{peak_type}/{key}_significative.txt")
-            del h.df['ID']
-            intro += f"<h3><u>Case replicate {key} ({peak_type}) significative only</u></h3>"
-            intro += df2html(h.df, dom='Bfrtip', show_index=False)
+        for peak_type in ['narrow', 'broad']:
+            for key in sorted(cc.conditions):
+                from sequana.homer import Homer
+                h = Homer(f"annotate_peaks_idr/{peak_type}/{key}_significative.txt")
+                del h.df['ID']
+                intro += f"<h3><u>Case replicate {key} ({peak_type}) significative only</u></h3>"
+                intro += df2html(h.df, dom='Bfrtip', show_index=False)
 
     # ========================================================== Final information
     intro += """<h2>Final information</h2>"""
@@ -1510,11 +1517,11 @@ contains both significant and non significant peaks</p>
 
 """
 
-    s = SummaryModule2(data, intro)
+    s = SequanaReport(data, intro)
 
     shell("chmod -R g+w .")
     shell("rm -rf rulegraph")
 onerror:
-    print("An error occurred. See message above.")
+    manager.onerror()
 
 

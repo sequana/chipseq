@@ -216,3 +216,7 @@ mapping:
                 type: str
             "output_directory":
                 type: str
+            "resources":
+                type: any
+                required: true
+
