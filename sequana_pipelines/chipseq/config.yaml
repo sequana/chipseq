@@ -7,7 +7,7 @@
 # If input_directory provided, use it otherwise if input_pattern provided,
 # use it, otherwise use input_samples.
 # ============================================================================
-sequana_wrappers: "v0.15.1"
+sequana_wrappers: "v23.12.5"
 
 input_directory: "" 
 input_readtag: _R[12]_
@@ -24,6 +24,7 @@ apptainers:
     ucsc: https://zenodo.org/record/10011490/files/ucsc_3.7.7.img
     samtools: https://zenodo.org/record/7437898/files/samtools_1.16.1.img
     idr: ''
+    multiqc: "https://zenodo.org/record/10205070/files/multiqc_1.16.0.img"
 
 
 #############################################################################
@@ -226,6 +227,8 @@ multiqc:
     modules: '' 
     input_directory: .
     config_file: multiqc_config.yaml
+    resources:
+        mem: 4G
 
 
 

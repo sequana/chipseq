@@ -7,7 +7,7 @@
     :alt: JOSS (journal of open source software) DOI
 
 .. image:: https://github.com/sequana/chipseq/actions/workflows/main.yml/badge.svg
-   :target: https://github.com/sequana/chipseq/actions/    
+   :target: https://github.com/sequana/chipseq/actions/
 
 
 .. image:: https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C3.10-blue.svg
@@ -38,15 +38,15 @@ Usage
 ::
 
     sequana_chipseq --help
-    sequana_chipseq --input-directory DATAPATH 
+    sequana_chipseq --input-directory DATAPATH
 
-This creates a directory with the pipeline and configuration file. You will then need 
+This creates a directory with the pipeline and configuration file. You will then need
 to execute the pipeline::
 
     cd chipseq
     sh chipseq.sh  # for a local run
 
-This launch a snakemake pipeline. If you are familiar with snakemake, you can 
+This launch a snakemake pipeline. If you are familiar with snakemake, you can
 retrieve the pipeline itself and its configuration files and then execute the pipeline yourself with specific parameters::
 
     snakemake -s chipseq.rules -c config.yaml --cores 4 --stats stats.txt
@@ -68,7 +68,7 @@ https://github.com/nboley/idr but we also provide a singularity in https://damon
 Details
 ~~~~~~~~~
 
-This pipeline runs **chipseq** in parallel on the input fastq files (paired or not). 
+This pipeline runs **chipseq** in parallel on the input fastq files (paired or not).
 A brief sequana summary report is also produced.
 
 
@@ -76,7 +76,7 @@ Rules and configuration details
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is the `latest documented configuration file <https://raw.githubusercontent.com/sequana/chipseq/main/sequana_pipelines/chipseq/config.yaml>`_
-to be used with the pipeline. Each rule used in the pipeline may have a section in the configuration file. 
+to be used with the pipeline. Each rule used in the pipeline may have a section in the configuration file.
 
 Changelog
 ~~~~~~~~~
@@ -84,6 +84,7 @@ Changelog
 ========= ====================================================================
 Version   Description
 ========= ====================================================================
+0.11.0    * switch to click and new sequana_pipetools
 0.10.0    * Fix design in case of samples that starts with same prefix
           * Include final IDR plots and tables
           * Fix containers and wrappers in the config file
@@ -92,5 +93,3 @@ Version   Description
 0.9.0     * use latest wrappers and apptainer (for rulegraph)
 0.8.0     **First release.**
 ========= ====================================================================
-
-

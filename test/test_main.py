@@ -2,9 +2,15 @@ import os
 import subprocess
 import sys
 
+from click.testing import CliRunner
+
+from sequana_pipelines.chipseq.main import main
+
 from . import test_dir
+
 datadir = f"{test_dir}/data/"
 genomedir = f"{test_dir}/data/ecoli_MG1655"
+
 
 def test_standalone_subprocess(tmp_path):
     wkdir = tmp_path / "test"
@@ -13,13 +19,27 @@ def test_standalone_subprocess(tmp_path):
     subprocess.call(cmd.split())
     assert os.path.exists(wkdir / "config.yaml")
 
+
 def test_standalone_script(tmp_path):
     wkdir = tmp_path / "test"
     wkdir.mkdir()
-    import sequana_pipelines.chipseq.main as m
-    sys.argv = ["test", "--input-directory", datadir, "--genome-directory", str(genomedir),  "--working-directory",str(wkdir), "--force", "--design-file", f"{datadir}/design.csv"]
-    m.main()
+
+    args = [
+        "--input-directory",
+        datadir,
+        "--genome-directory",
+        str(genomedir),
+        "--working-directory",
+        str(wkdir),
+        "--force",
+        "--design-file",
+        f"{datadir}/design.csv",
+    ]
+    runner = CliRunner()
+    results = runner.invoke(main, args)
     assert os.path.exists(wkdir / "config.yaml")
+    assert results.exit_code == 0
+
 
 def test_full(tmp_path):
 
@@ -36,7 +56,7 @@ def test_full(tmp_path):
 
     assert os.path.exists(wkdir / "summary.html")
 
+
 def test_version():
     cmd = "sequana_chipseq --version"
     subprocess.call(cmd.split())
-
