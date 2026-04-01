@@ -19,7 +19,6 @@ dependencies:
 - ucsc-bedgraphtobigwig
 - homer
 - macs3
-- idr
 - multiqc
 - snakemake-minimal
 - pip:

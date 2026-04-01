@@ -153,7 +153,9 @@ The following tools must be available (install via conda/bioconda)::
 - **ucsc-bedgraphtobigwig** — bedGraph to bigWig conversion
 - **macs3** — narrow and broad peak calling
 - **homer** — peak annotation (``annotatePeaks.pl``)
-- **idr** — Irreproducibility Discovery Rate between replicates
+- **idr** — Irreproducibility Discovery Rate between replicates (installed from
+  `sequana/idr <https://github.com/sequana/idr>`_ fork via pip; the upstream
+  bioconda package is Python 3.10-only)
 - **multiqc** — aggregated QC report
 
 
@@ -200,7 +202,10 @@ Changelog
 ========= ====================================================================
 Version   Description
 ========= ====================================================================
-0.12.0    * Fix ``plot_FRiP``: was iterating over all comparisons inside each
+0.12.0    * Replace bioconda ``idr`` with pip install from ``sequana/idr``
+            fork; fixes CI failures on Python 3.11/3.12 (upstream package
+            is Python 3.10-only due to Cython 3.x incompatibility)
+          * Fix ``plot_FRiP``: was iterating over all comparisons inside each
             rule invocation causing ``FileNotFoundError`` in parallel runs;
             now processes only its own wildcard
           * Fix IDR rules (``idr_NT``, ``self_pseudo_replicate_idr``,
