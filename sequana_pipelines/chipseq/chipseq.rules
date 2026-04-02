@@ -532,7 +532,7 @@ rule macs3:
     log:
         "macs3/{broad_narrow}/{comp}_out.log"
     container:
-        config['apptainers']['sequana_tools']
+        config['apptainers']['macs3']
     shell:
         """
         format_opt="-f BAM"
@@ -551,8 +551,7 @@ rule macs3:
             -q {params.qvalue} \
             $format_opt \
             $broad_opt \
-            --outdir {params.outdir} > {log} 2>&1 || true
-        if [ ! -f "{output}" ]; then touch {output}; fi
+            --outdir {params.outdir} > {log} 2>&1
         """
 
 
@@ -705,12 +704,8 @@ if config['idr']['do']:
             idr --samples {input} --input-file-type {wildcards.broad_narrow}Peak --rank {params.rank} \
                 --output-file IDR/{wildcards.broad_narrow}/{wildcards.condition} \
                 --plot --soft-idr-threshold {params.soft_idr_threshold} \
-                1>{log.out} 2>{log.err} || true
-            if [ -f "IDR/{wildcards.broad_narrow}/{wildcards.condition}" ]; then
-                mv IDR/{wildcards.broad_narrow}/{wildcards.condition} {output}
-            else
-                touch {output}
-            fi
+                1>{log.out} 2>{log.err}
+            mv IDR/{wildcards.broad_narrow}/{wildcards.condition} {output}
             """
 
     rule plot_idr:
@@ -823,7 +818,7 @@ if config['idr']['do'] and config['idr']['self_pseudo_replicates']:
         log:
             "SPR_IDR/macs3/{broad_narrow}/{condition}_rep{rep}_rep{rep2}_SPR{N}.out"
         container:
-            config['apptainers']['sequana_tools']
+            config['apptainers']['macs3']
         shell:
             """
             format_opt="-f BAM"
@@ -842,8 +837,7 @@ if config['idr']['do'] and config['idr']['self_pseudo_replicates']:
                 -q {params.qvalue} \
                 $format_opt \
                 $broad_opt \
-                --outdir {params.outdir} > {log} 2>&1 || true
-            if [ ! -f "{output}" ]; then touch {output}; fi
+                --outdir {params.outdir} > {log} 2>&1
             """
 
 
@@ -865,12 +859,8 @@ if config['idr']['do'] and config['idr']['self_pseudo_replicates']:
             """
             idr --samples {input} --input-file-type {wildcards.broad_narrow}Peak --rank {params.rank} \
                 --output-file SPR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_rep{wildcards.rep}_SPR{wildcards.N} \
-                --plot --soft-idr-threshold {params.soft_idr_threshold} 1>{log.out} 2>{log.err} || true
-            if [ -f "SPR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_rep{wildcards.rep}_SPR{wildcards.N}" ]; then
-                mv SPR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_rep{wildcards.rep}_SPR{wildcards.N} {output}
-            else
-                touch {output}
-            fi
+                --plot --soft-idr-threshold {params.soft_idr_threshold} 1>{log.out} 2>{log.err}
+            mv SPR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_rep{wildcards.rep}_SPR{wildcards.N} {output}
             """
     expected_output += expand("SPR_IDR/idr/{broad_narrow}/{condition}_rep{rep}_SPR{N}.csv", broad_narrow=['broad','narrow'], condition=cc.conditions, N=range(1, config['idr'].get('self_pseudo_replicates',1)+1), rep=[1,2])
 
@@ -937,7 +927,7 @@ if config['idr']['do'] and config['idr']['pseudo_replicates']:
         log:
             "PR_IDR/macs3/{broad_narrow}/{condition}_{rep}_PR{N}.log"
         container:
-            config['apptainers']['sequana_tools']
+            config['apptainers']['macs3']
         shell:
             """
             format_opt="-f BAM"
@@ -956,8 +946,7 @@ if config['idr']['do'] and config['idr']['pseudo_replicates']:
                 -q {params.qvalue} \
                 $format_opt \
                 $broad_opt \
-                --outdir {params.outdir} > {log} 2>&1 || true
-            if [ ! -f "{output}" ]; then touch {output}; fi
+                --outdir {params.outdir} > {log} 2>&1
             """
 
 
@@ -979,12 +968,8 @@ if config['idr']['do'] and config['idr']['pseudo_replicates']:
             """
             idr --samples {input} --input-file-type {wildcards.broad_narrow}Peak --rank {params.rank} \
                 --output-file PR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_PR{wildcards.N} \
-                --plot --soft-idr-threshold {params.soft_idr_threshold} 1>{log.out} 2>{log.err} || true
-            if [ -f "PR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_PR{wildcards.N}" ]; then
-                mv PR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_PR{wildcards.N} {output}
-            else
-                touch {output}
-            fi
+                --plot --soft-idr-threshold {params.soft_idr_threshold} 1>{log.out} 2>{log.err}
+            mv PR_IDR/idr/{wildcards.broad_narrow}/{wildcards.condition}_PR{wildcards.N} {output}
             """
 
     expected_output += expand("PR_IDR/idr/{broad_narrow}/{condition}_PR{N}.csv", broad_narrow=['broad','narrow'], condition=cc.conditions, N=range(1, config['idr'].get('pseudo_replicates',1)+1))
