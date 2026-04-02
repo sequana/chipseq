@@ -551,7 +551,17 @@ rule macs3:
             -q {params.qvalue} \
             $format_opt \
             $broad_opt \
-            --outdir {params.outdir} > {log} 2>&1 || true
+            --outdir {params.outdir} > {log} 2>&1
+        exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+            # Tolerate known "no peaks" cases: MACS3 may exit non-zero but report this condition in the log.
+            if grep -qi "no peaks were found" {log} || grep -qi "no peaks are called" {log}; then
+                if [ ! -f "{output}" ]; then touch {output}; fi
+                exit 0
+            else
+                exit $exit_code
+            fi
+        fi
         if [ ! -f "{output}" ]; then touch {output}; fi
         """
 
