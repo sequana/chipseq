@@ -966,8 +966,14 @@ if config['idr']['do'] and config['idr']['pseudo_replicates']:
                 -q {params.qvalue} \
                 $format_opt \
                 $broad_opt \
-                --outdir {params.outdir} > {log} 2>&1 || true
-            if [ ! -f "{output}" ]; then touch {output}; fi
+                --outdir {params.outdir} > {log} 2>&1
+            status=$?
+            if [ "$status" -ne 0 ]; then
+                exit "$status"
+            fi
+            if [ ! -f "{output}" ]; then
+                touch {output}
+            fi
             """
 
 
