@@ -531,8 +531,29 @@ rule macs3:
         outdir          = "macs3/{broad_narrow}"
     log:
         "macs3/{broad_narrow}/{comp}_out.log"
+    container:
+        config['apptainers']['sequana_tools']
     shell:
-        manager.get_shell("macs3/run", "v1")
+        """
+        format_opt="-f BAM"
+        if [ "{params.paired}" = "True" ]; then format_opt="-f BAMPE"; fi
+        broad_opt=""
+        if [ "{params.mode}" = "broad" ]; then
+            broad_opt="--broad --broad-cutoff {params.broad_cutoff}"
+        fi
+        macs3 callpeak -B --SPMR \
+            -t {input.inputs} \
+            -c {input.controls} \
+            -g {params.genome_size} \
+            -n {params.prefix} \
+            --bw {params.bandwidth} \
+            {params.options} \
+            -q {params.qvalue} \
+            $format_opt \
+            $broad_opt \
+            --outdir {params.outdir} > {log} 2>&1 || true
+        if [ ! -f "{output}" ]; then touch {output}; fi
+        """
 
 
 # ===================================================== naive consensus summary
@@ -801,8 +822,29 @@ if config['idr']['do'] and config['idr']['self_pseudo_replicates']:
             outdir          = "SPR_IDR/macs3/{broad_narrow}"
         log:
             "SPR_IDR/macs3/{broad_narrow}/{condition}_rep{rep}_rep{rep2}_SPR{N}.out"
+        container:
+            config['apptainers']['sequana_tools']
         shell:
-            manager.get_shell("macs3/run", "v1")
+            """
+            format_opt="-f BAM"
+            if [ "{params.paired}" = "True" ]; then format_opt="-f BAMPE"; fi
+            broad_opt=""
+            if [ "{params.mode}" = "broad" ]; then
+                broad_opt="--broad --broad-cutoff {params.broad_cutoff}"
+            fi
+            macs3 callpeak -B --SPMR \
+                -t {input.inputs} \
+                -c {input.controls} \
+                -g {params.genome_size} \
+                -n {params.prefix} \
+                --bw {params.bandwidth} \
+                {params.options} \
+                -q {params.qvalue} \
+                $format_opt \
+                $broad_opt \
+                --outdir {params.outdir} > {log} 2>&1 || true
+            if [ ! -f "{output}" ]; then touch {output}; fi
+            """
 
 
     rule self_pseudo_replicate_idr:
@@ -894,8 +936,29 @@ if config['idr']['do'] and config['idr']['pseudo_replicates']:
             outdir          = "PR_IDR/macs3/{broad_narrow}"
         log:
             "PR_IDR/macs3/{broad_narrow}/{condition}_{rep}_PR{N}.log"
+        container:
+            config['apptainers']['sequana_tools']
         shell:
-            manager.get_shell("macs3/run", "v1")
+            """
+            format_opt="-f BAM"
+            if [ "{params.paired}" = "True" ]; then format_opt="-f BAMPE"; fi
+            broad_opt=""
+            if [ "{params.mode}" = "broad" ]; then
+                broad_opt="--broad --broad-cutoff {params.broad_cutoff}"
+            fi
+            macs3 callpeak -B --SPMR \
+                -t {input.inputs} \
+                -c {input.controls} \
+                -g {params.genome_size} \
+                -n {params.prefix} \
+                --bw {params.bandwidth} \
+                {params.options} \
+                -q {params.qvalue} \
+                $format_opt \
+                $broad_opt \
+                --outdir {params.outdir} > {log} 2>&1 || true
+            if [ ! -f "{output}" ]; then touch {output}; fi
+            """
 
 
     rule pseudo_replicate_idr:
